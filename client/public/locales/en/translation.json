@@ -1,0 +1,24 @@
+{
+    "welcome": "Welcome to EmprendeJoven 360",
+    "dashboard": {
+        "title": "Dashboard",
+        "points": "Total Points",
+        "level": "Current Level",
+        "streak": "Streak",
+        "explore": "Explore Modules",
+        "diagnostic": "Take Diagnostic"
+    },
+    "nav": {
+        "learning": "Learning",
+        "progress": "My Progress",
+        "mentorship": "Mentorship",
+        "chatbot": "AI Assistant",
+        "logout": "Logout"
+    },
+    "home": {
+        "hero_title": "Develop Your Entrepreneurial Potential",
+        "hero_subtitle": "The comprehensive platform for young people who want to transform their ideas into profitable and scalable businesses.",
+        "cta_start": "Get Started",
+        "cta_learn": "Learn More"
+    }
+}

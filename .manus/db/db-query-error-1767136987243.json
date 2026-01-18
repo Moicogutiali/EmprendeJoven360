@@ -1,0 +1,8 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS levels (id int AUTO_INCREMENT PRIMARY KEY, phaseId int NOT NULL, name varchar(100) NOT NULL, description text, `order` int NOT NULL, requirements json DEFAULT '{}', createdAt timestamp DEFAULT CURRENT_TIMESTAMP, INDEX phase_idx (phaseId));",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4ZaUCLSBwKUJhjs.root --database NXZducWMtz6omAcXqHZNYM --execute CREATE TABLE IF NOT EXISTS levels (id int AUTO_INCREMENT PRIMARY KEY, phaseId int NOT NULL, name varchar(100) NOT NULL, description text, `order` int NOT NULL, requirements json DEFAULT '{}', createdAt timestamp DEFAULT CURRENT_TIMESTAMP, INDEX phase_idx (phaseId));",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1101 (42000) at line 1: BLOB/TEXT/JSON column 'requirements' can't have a default value"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+    "welcome": "Bienvenido a EmprendeJoven 360",
+    "dashboard": {
+        "title": "Dashboard",
+        "points": "Puntos totales",
+        "level": "Nivel actual",
+        "streak": "Racha",
+        "explore": "Explorar Módulos",
+        "diagnostic": "Realizar Diagnóstico"
+    },
+    "nav": {
+        "learning": "Aprendizaje",
+        "progress": "Mi Progreso",
+        "mentorship": "Mentorías",
+        "chatbot": "Asistente AI",
+        "logout": "Salir"
+    },
+    "home": {
+        "hero_title": "Desarrolla tu Potencial Emprendedor",
+        "hero_subtitle": "La plataforma integral para jóvenes que quieren transformar sus ideas en negocios rentables y escalables.",
+        "cta_start": "Comenzar Ahora",
+        "cta_learn": "Saber Más"
+    }
+}

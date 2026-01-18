@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS adaptive_routes (id int AUTO_INCREMENT PRIMARY KEY, userId int NOT NULL, diagnosticId int, recommendedPath json, currentLevel int, nextMilestone json, adaptationHistory json, updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, INDEX user_idx (userId));",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4ZaUCLSBwKUJhjs.root --database NXZducWMtz6omAcXqHZNYM --execute CREATE TABLE IF NOT EXISTS adaptive_routes (id int AUTO_INCREMENT PRIMARY KEY, userId int NOT NULL, diagnosticId int, recommendedPath json, currentLevel int, nextMilestone json, adaptationHistory json, updatedAt timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, INDEX user_idx (userId));",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 575
+}

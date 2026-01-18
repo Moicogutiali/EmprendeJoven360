@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS evaluations (id int AUTO_INCREMENT PRIMARY KEY, unitId int NOT NULL, questions json NOT NULL, passingScore int DEFAULT 70, timeLimit int, createdAt timestamp DEFAULT CURRENT_TIMESTAMP, INDEX unit_idx (unitId));",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4ZaUCLSBwKUJhjs.root --database NXZducWMtz6omAcXqHZNYM --execute CREATE TABLE IF NOT EXISTS evaluations (id int AUTO_INCREMENT PRIMARY KEY, unitId int NOT NULL, questions json NOT NULL, passingScore int DEFAULT 70, timeLimit int, createdAt timestamp DEFAULT CURRENT_TIMESTAMP, INDEX unit_idx (unitId));",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 511
+}

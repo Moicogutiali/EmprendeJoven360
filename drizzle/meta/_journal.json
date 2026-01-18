@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1767135382359,
+      "tag": "0000_simple_carlie_cooper",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1767135442390,
+      "tag": "0001_aromatic_morph",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1767136827326,
+      "tag": "0002_great_mordo",
+      "breakpoints": true
+    }
+  ]
+}

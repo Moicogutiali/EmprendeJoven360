@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS units (id int AUTO_INCREMENT PRIMARY KEY, moduleId int NOT NULL, name varchar(150) NOT NULL, description text, `order` int NOT NULL, contentType enum('video','podcast','ebook','infografia','quiz') NOT NULL, contentUrl text, duration int, estimatedTime int, createdAt timestamp DEFAULT CURRENT_TIMESTAMP, INDEX module_idx (moduleId));",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4ZaUCLSBwKUJhjs.root --database NXZducWMtz6omAcXqHZNYM --execute CREATE TABLE IF NOT EXISTS units (id int AUTO_INCREMENT PRIMARY KEY, moduleId int NOT NULL, name varchar(150) NOT NULL, description text, `order` int NOT NULL, contentType enum('video','podcast','ebook','infografia','quiz') NOT NULL, contentUrl text, duration int, estimatedTime int, createdAt timestamp DEFAULT CURRENT_TIMESTAMP, INDEX module_idx (moduleId));",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 513
+}

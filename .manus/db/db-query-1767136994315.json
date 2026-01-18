@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS modules (id int AUTO_INCREMENT PRIMARY KEY, levelId int NOT NULL, name varchar(150) NOT NULL, description text, `order` int NOT NULL, learningObjectives json, estimatedHours decimal(5,2), createdAt timestamp DEFAULT CURRENT_TIMESTAMP, INDEX level_idx (levelId));",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4ZaUCLSBwKUJhjs.root --database NXZducWMtz6omAcXqHZNYM --execute CREATE TABLE IF NOT EXISTS modules (id int AUTO_INCREMENT PRIMARY KEY, levelId int NOT NULL, name varchar(150) NOT NULL, description text, `order` int NOT NULL, learningObjectives json, estimatedHours decimal(5,2), createdAt timestamp DEFAULT CURRENT_TIMESTAMP, INDEX level_idx (levelId));",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 543
+}
