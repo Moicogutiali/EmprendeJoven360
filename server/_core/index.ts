@@ -1,4 +1,5 @@
-import express from "express";
+import "dotenv/config";
+import * as Sentry from "@sentry/node";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
@@ -11,7 +12,7 @@ import { serveStatic, setupVite } from "./vite";
 Sentry.init({
   dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/123",
   tracesSampleRate: 1.0,
-});
+} as any);
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -38,12 +39,12 @@ const server = createServer(app);
 async function startServer() {
 
   // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  (app as any).use(express.json({ limit: "50mb" }));
+  (app as any).use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app);
+  registerOAuthRoutes(app as any);
   // tRPC API
-  app.use(
+  (app as any).use(
     "/api/trpc",
     createExpressMiddleware({
       router: appRouter,
@@ -52,9 +53,9 @@ async function startServer() {
   );
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
+    await setupVite(app as any, server);
   } else {
-    serveStatic(app);
+    serveStatic(app as any);
   }
 
   // Only start listening if this file is run directly (not as a module/serverless)
