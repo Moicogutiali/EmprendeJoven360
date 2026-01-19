@@ -1,6 +1,4 @@
-import "dotenv/config";
-import * as Sentry from "@sentry/node";
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
+import express from "express";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
