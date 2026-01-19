@@ -52,59 +52,53 @@ export function registerOAuthRoutes(app: Express) {
     }
   });
 
-  // --- RUTA DE ACCESO DIRECTO (Bypass) ---
-  // Permite entrar sin proveedor externo si no se tienen credenciales
+  // --- RUTA DE ACCESO DIRECTO (Bypass - Pure Mock) ---
+  // Versión "Blindada": No usa DB ni SDK para evitar crashes por configuración
   app.get("/api/oauth/bypass", async (req: Request, res: Response) => {
     try {
-      // Usuario Simulado (Admin)
+      console.log("[Bypass] Starting Pure Mock sequence...");
+
+      const ONE_YEAR_MS = 31536000000;
       const fakeUser = {
         openId: "admin-bypass-001",
         name: "Admin Local",
-        email: "admin@emprendejoven.dev",
-        role: "admin",
-        loginMethod: "bypass"
+        email: "admin@emprendejoven.dev"
       };
 
-      // 1. Guardar usuario en BD
-      console.log("[Bypass] Upserting user...");
-      try {
-        await db.upsertUser({
-          openId: fakeUser.openId,
-          name: fakeUser.name,
-          email: fakeUser.email,
-          loginMethod: fakeUser.loginMethod,
-          lastSignedIn: new Date(),
-        });
-        console.log("[Bypass] User upserted.");
-      } catch (dbError) {
-        console.error("[Bypass] DB Upsert failed", dbError);
-        // Fallback: Proceed without DB upsert, hope user exists or just get a token to debug
-        (res as any).status(500).json({
-          error: "DB Error: " + String(dbError),
-          details: (dbError as any).message
-        });
-        return;
-      }
+      // Generar JWT manualmente sin usar el SDK para evitar errores de red o DB
+      const { SignJWT } = require("jose");
+      const secret = process.env.JWT_SECRET || "super-secret-lms-key-2026";
+      const secretKey = new TextEncoder().encode(secret);
 
-      // 2. Crear Sesión y Token
-      console.log("[Bypass] Creating session...");
-      const sessionToken = await sdk.createSessionToken(fakeUser.openId, {
+      const sessionToken = await new SignJWT({
+        openId: fakeUser.openId,
+        appId: "emprendejoven-360",
         name: fakeUser.name,
-        expiresInMs: ONE_YEAR_MS,
+      })
+        .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+        .setExpirationTime(Math.floor((Date.now() + ONE_YEAR_MS) / 1000))
+        .sign(secretKey);
+
+      console.log("[Bypass] Manual JWT created.");
+
+      // Establecer Cookie manualmente
+      const isProduction = process.env.NODE_ENV === "production";
+      (res as any).cookie(COOKIE_NAME, sessionToken, {
+        path: "/",
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "lax",
+        maxAge: ONE_YEAR_MS
       });
-      console.log("[Bypass] Session created.");
 
-      // 3. Establecer Cookie
-      const cookieOptions = getSessionCookieOptions(req);
-      (res as any).cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-
-      // 4. Redirigir al inicio
+      console.log("[Bypass] Redirecting...");
       (res as any).redirect(302, "/");
 
     } catch (error) {
-      console.error("[Auth] Bypass failed", error);
+      console.error("[Auth] Bypass CRITICAL FAILURE", error);
       (res as any).status(500).json({
-        error: "Bypass login failed: " + String(error),
+        error: "Bypass Critical Failure",
+        message: String(error),
         stack: (error as Error).stack
       });
     }
