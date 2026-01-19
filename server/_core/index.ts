@@ -10,10 +10,11 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/123",
-  tracesSampleRate: 1.0,
-} as any);
+// Sentry initialization disabled temporarily to debug Vercel Crash
+// Sentry.init({
+//   dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/123",
+//   tracesSampleRate: 1.0,
+// } as any);
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
