@@ -66,19 +66,33 @@ export function registerOAuthRoutes(app: Express) {
       };
 
       // 1. Guardar usuario en BD
-      await db.upsertUser({
-        openId: fakeUser.openId,
-        name: fakeUser.name,
-        email: fakeUser.email,
-        loginMethod: fakeUser.loginMethod,
-        lastSignedIn: new Date(),
-      });
+      console.log("[Bypass] Upserting user...");
+      try {
+        await db.upsertUser({
+          openId: fakeUser.openId,
+          name: fakeUser.name,
+          email: fakeUser.email,
+          loginMethod: fakeUser.loginMethod,
+          lastSignedIn: new Date(),
+        });
+        console.log("[Bypass] User upserted.");
+      } catch (dbError) {
+        console.error("[Bypass] DB Upsert failed", dbError);
+        // Fallback: Proceed without DB upsert, hope user exists or just get a token to debug
+        (res as any).status(500).json({
+          error: "DB Error: " + String(dbError),
+          details: (dbError as any).message
+        });
+        return;
+      }
 
       // 2. Crear Sesión y Token
+      console.log("[Bypass] Creating session...");
       const sessionToken = await sdk.createSessionToken(fakeUser.openId, {
         name: fakeUser.name,
         expiresInMs: ONE_YEAR_MS,
       });
+      console.log("[Bypass] Session created.");
 
       // 3. Establecer Cookie
       const cookieOptions = getSessionCookieOptions(req);
@@ -89,7 +103,10 @@ export function registerOAuthRoutes(app: Express) {
 
     } catch (error) {
       console.error("[Auth] Bypass failed", error);
-      (res as any).status(500).json({ error: "Bypass login failed" });
+      (res as any).status(500).json({
+        error: "Bypass login failed: " + String(error),
+        stack: (error as Error).stack
+      });
     }
   });
 }
