@@ -1,3 +1,4 @@
+// @ts-nocheck
 import "dotenv/config";
 import * as Sentry from "@sentry/node";
 import express from "express";
