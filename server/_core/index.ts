@@ -39,9 +39,6 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
   throw new Error(`No available port found starting from ${startPort}`);
 }
 
-const app = express();
-const server = createServer(app);
-
 // --- SYNC CONFIGURATION (Safest for Vercel) ---
 // Configure body parser with larger size limit for file uploads
 (app as any).use(express.json({ limit: "50mb" }));
