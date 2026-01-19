@@ -1,6 +1,6 @@
 // @ts-nocheck
 import "dotenv/config";
-import * as Sentry from "@sentry/node";
+// import * as Sentry from "@sentry/node"; // Sentry Removed
 import express from "express";
 import { createServer } from "http";
 import net from "net";
@@ -10,11 +10,15 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
-// Sentry initialization disabled temporarily to debug Vercel Crash
-// Sentry.init({
-//   dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/123",
-//   tracesSampleRate: 1.0,
-// } as any);
+// Sentry.init removed completely
+
+const app = express();
+const server = createServer(app);
+
+// Simple Health Check
+(app as any).get("/api/health", (req: any, res: any) => {
+  res.json({ status: "ok", time: new Date().toISOString() });
+});
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
