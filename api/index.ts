@@ -12,10 +12,11 @@ export default async function handler(req: any, res: any) {
 
             // HACK: Force Vercel to bundle the file using require.resolve
             // This tells 'nft' (Node File Trace) to include the file in the lambda
-            try { require.resolve("../server/_core/index"); } catch (e) { console.log('Resolve check skipped'); }
+            try { require.resolve("../server/_core/index.js"); } catch (e) { console.log('Resolve check skipped'); }
 
             // Now actually load it using ESM import (compatible with type: "module")
-            const module = await import("../server/_core/index");
+            // Node.js ESM REQUIRES explicit file extensions
+            const module = await import("../server/_core/index.js");
             app = module.default;
             console.log("[Vercel] App loaded successfully.");
         } catch (error) {
