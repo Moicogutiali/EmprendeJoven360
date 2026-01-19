@@ -12,11 +12,7 @@ import { serveStatic, setupVite } from "./vite";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN || "https://placeholder@sentry.io/123",
-  integrations: [
-    nodeProfilingIntegration(),
-  ],
   tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0,
 });
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -42,8 +38,6 @@ const app = express();
 const server = createServer(app);
 
 async function startServer() {
-  // Sentry request handler must be the first middleware on the app
-  Sentry.setupExpressErrorHandler(app);
 
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));

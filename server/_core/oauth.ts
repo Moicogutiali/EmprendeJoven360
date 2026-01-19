@@ -5,7 +5,7 @@ import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 
 function getQueryParam(req: Request, key: string): string | undefined {
-  const value = req.query[key];
+  const value = (req.query as Record<string, any>)[key];
   return typeof value === "string" ? value : undefined;
 }
 
