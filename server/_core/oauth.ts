@@ -62,7 +62,7 @@ export function registerOAuthRoutes(app: Express) {
 
       const ONE_YEAR_MS = 31536000000;
       const fakeUser = {
-        openId: "admin-bypass-001",
+        openId: "bypass-admin-001", // Must start with 'bypass-' to trigger SDK mock logic
         name: "Admin Local",
         email: "admin@emprendejoven.dev"
       };
