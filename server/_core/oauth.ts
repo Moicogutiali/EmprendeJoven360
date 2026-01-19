@@ -1,5 +1,7 @@
 // @ts-nocheck
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { SignJWT } from "jose"; // Ensure this is explicitly imported
+import type { Express, Request, Response } from "express";
 import type { Express, Request, Response } from "express";
 import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
@@ -66,7 +68,6 @@ export function registerOAuthRoutes(app: Express) {
       };
 
       // Generar JWT manualmente sin usar el SDK para evitar errores de red o DB
-      const { SignJWT } = require("jose");
       const secret = process.env.JWT_SECRET || "super-secret-lms-key-2026";
       const secretKey = new TextEncoder().encode(secret);
 
