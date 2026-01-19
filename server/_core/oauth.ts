@@ -51,4 +51,45 @@ export function registerOAuthRoutes(app: Express) {
       (res as any).status(500).json({ error: "OAuth callback failed" });
     }
   });
+
+  // --- RUTA DE ACCESO DIRECTO (Bypass) ---
+  // Permite entrar sin proveedor externo si no se tienen credenciales
+  app.get("/api/oauth/bypass", async (req: Request, res: Response) => {
+    try {
+      // Usuario Simulado (Admin)
+      const fakeUser = {
+        openId: "admin-bypass-001",
+        name: "Admin Local",
+        email: "admin@emprendejoven.dev",
+        role: "admin",
+        loginMethod: "bypass"
+      };
+
+      // 1. Guardar usuario en BD
+      await db.upsertUser({
+        openId: fakeUser.openId,
+        name: fakeUser.name,
+        email: fakeUser.email,
+        loginMethod: fakeUser.loginMethod,
+        lastSignedIn: new Date(),
+      });
+
+      // 2. Crear Sesión y Token
+      const sessionToken = await sdk.createSessionToken(fakeUser.openId, {
+        name: fakeUser.name,
+        expiresInMs: ONE_YEAR_MS,
+      });
+
+      // 3. Establecer Cookie
+      const cookieOptions = getSessionCookieOptions(req);
+      (res as any).cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+      // 4. Redirigir al inicio
+      (res as any).redirect(302, "/");
+
+    } catch (error) {
+      console.error("[Auth] Bypass failed", error);
+      (res as any).status(500).json({ error: "Bypass login failed" });
+    }
+  });
 }
