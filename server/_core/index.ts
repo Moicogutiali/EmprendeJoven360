@@ -37,30 +37,47 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 const app = express();
 const server = createServer(app);
 
-async function startServer() {
+// --- SYNC CONFIGURATION (Safest for Vercel) ---
+// Configure body parser with larger size limit for file uploads
+(app as any).use(express.json({ limit: "50mb" }));
+(app as any).use(express.urlencoded({ limit: "50mb", extended: true }));
 
-  // Configure body parser with larger size limit for file uploads
-  (app as any).use(express.json({ limit: "50mb" }));
-  (app as any).use(express.urlencoded({ limit: "50mb", extended: true }));
-  // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app as any);
-  // tRPC API
-  (app as any).use(
-    "/api/trpc",
-    createExpressMiddleware({
-      router: appRouter,
-      createContext,
-    })
-  );
-  // development mode uses Vite, production mode uses static files
+// Custom Logging Middleware to debug Vercel requests
+(app as any).use((req: any, res: any, next: any) => {
+  console.log(`[Request] ${req.method} ${req.url}`);
+  next();
+});
+
+// OAuth callback under /api/oauth/callback AND Bypass
+registerOAuthRoutes(app as any);
+
+// tRPC API
+(app as any).use(
+  "/api/trpc",
+  createExpressMiddleware({
+    router: appRouter,
+    createContext,
+  })
+);
+
+// --- ASYNC CONFIGURATION (Vite / Static) ---
+// We wrap this in a function but don't block the export
+async function configureStaticAssets() {
   if (process.env.NODE_ENV === "development") {
     await setupVite(app as any, server);
   } else {
     serveStatic(app as any);
   }
+}
 
-  // Only start listening if this file is run directly (not as a module/serverless)
-  if (process.env.NODE_ENV !== "production" || process.env.VERCEL_ENV === undefined) {
+// Start static asset config (fire and forget for Vercel cold boot, 
+// usually Vercel handles static files via vercel.json rewrites so this is fallback)
+configureStaticAssets().catch(console.error);
+
+// --- SERVER LISTENING (Local Dev Only) ---
+async function startLocalServer() {
+  // Only start listening if NOT in Vercel/Production serverless mode
+  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
     const preferredPort = parseInt(process.env.PORT || "3000");
     const port = await findAvailablePort(preferredPort);
 
@@ -74,6 +91,6 @@ async function startServer() {
   }
 }
 
-startServer().catch(console.error);
+startLocalServer().catch(console.error);
 
 export default app;
