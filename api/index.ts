@@ -1,4 +1,7 @@
 // @ts-nocheck
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
 // Cache the app instance
 let app: any = null;
 
