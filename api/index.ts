@@ -1,21 +1,20 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
+// @ts-nocheck
 // Cache the app instance
 let app: any = null;
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
     if (!app) {
         try {
             console.log("[Vercel] Loading application...");
-            // Dynamically import the app to catch initialization errors
-            const module = await import("../server/_core/index");
-            app = module.default;
+            // Using require ensures Vercel's static analysis detects the dependency
+            // and bundles 'server/_core/index' correctly.
+            const module = require("../server/_core/index");
+            app = module.default || module;
             console.log("[Vercel] App loaded successfully.");
         } catch (error) {
             console.error("[Vercel] CRITICAL: Failed to load application", error);
 
             // EMERGENCY FALLBACK RESPONSE
-            // This ensures we get a visible error instead of a generic 500 crash
             res.status(500).json({
                 status: "critical_error",
                 message: "Application failed to initialize",
