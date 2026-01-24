@@ -29,7 +29,8 @@ export default function AuthPage() {
             await signIn(loginEmail, loginPassword);
             navigate('/dashboard');
         } catch (err: any) {
-            setAuthError(err.message || 'Error al iniciar sesión');
+            console.error("Login error:", err);
+            setAuthError(err.message || err.error_description || 'Error al iniciar sesión');
         }
     };
 
@@ -53,7 +54,8 @@ export default function AuthPage() {
             // Show success message
             alert('¡Registro exitoso! Revisa tu email para confirmar tu cuenta.');
         } catch (err: any) {
-            setAuthError(err.message || 'Error al registrarse');
+            console.error("Registration error:", err);
+            setAuthError(err.message || err.error_description || 'Error al registrarse');
         }
     };
 
@@ -62,7 +64,8 @@ export default function AuthPage() {
         try {
             await signInWithOAuth(provider);
         } catch (err: any) {
-            setAuthError(err.message || 'Error al iniciar sesión con OAuth');
+            console.error("OAuth error:", err);
+            setAuthError(err.message || err.error_description || 'Error al iniciar sesión con OAuth');
         }
     };
 
