@@ -65,6 +65,7 @@ export function useSupabaseAuth() {
                 throw error;
             }
 
+            setState((prev) => ({ ...prev, loading: false }));
             return data;
         },
         []
@@ -83,6 +84,7 @@ export function useSupabaseAuth() {
             throw error;
         }
 
+        setState((prev) => ({ ...prev, loading: false }));
         return data;
     }, []);
 
@@ -102,6 +104,8 @@ export function useSupabaseAuth() {
                 throw error;
             }
 
+            // OAuth redirects, so loading state might persist until unload, but safer to reset just in case
+            setState((prev) => ({ ...prev, loading: false }));
             return data;
         },
         []
