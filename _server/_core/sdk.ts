@@ -301,8 +301,9 @@ class SDKServer {
         });
         user = await db.getUserByOpenId(userInfo.openId);
       } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
+        console.warn("[Auth] Failed to sync user from OAuth (legacy mode ignored):", error);
+        // Do NOT throw error here, just return undefined user if sync fails
+        // This allows the request to proceed without crashing (returning 500)
       }
     }
 

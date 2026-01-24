@@ -10,6 +10,10 @@ let _db: ReturnType<typeof drizzle> | null = null;
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
+    if (!process.env.DATABASE_URL.startsWith('postgresql://') && !process.env.DATABASE_URL.startsWith('postgres://')) {
+      console.error("[Database] Invalid DATABASE_URL format");
+      return null;
+    }
     try {
       // Vercel/Supabase often requires SSL
       const client = postgres(process.env.DATABASE_URL, {
@@ -24,6 +28,7 @@ export async function getDb() {
   }
   return _db;
 }
+
 
 // ===== USER MANAGEMENT =====
 

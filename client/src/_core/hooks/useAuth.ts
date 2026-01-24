@@ -18,8 +18,9 @@ export function useAuth(options?: UseAuthOptions) {
   const meQuery = trpc.auth.me.useQuery(undefined, {
     retry: false,
     refetchOnWindowFocus: false,
-    enabled: supabaseAuth.isAuthenticated,
+    enabled: !!supabaseAuth.isAuthenticated,
   });
+
 
   const logout = useCallback(async () => {
     try {
@@ -60,7 +61,10 @@ export function useAuth(options?: UseAuthOptions) {
 
       return {
         user,
-        loading: true, // Still loading until DB user arrives
+        // CRITICAL FIX: IF we have supabase session, we are authenticated. 
+        // Do NOT fetch wait for DB user to show UI.
+        // We only show loading state if we have absolutely no info.
+        loading: false,
         error: supabaseAuth.error || meQuery.error || null,
         isAuthenticated: true,
       };
@@ -69,7 +73,7 @@ export function useAuth(options?: UseAuthOptions) {
     // 3. Not authenticated
     return {
       user: null,
-      loading: supabaseAuth.loading || meQuery.isLoading,
+      loading: meQuery.isLoading && !meQuery.error, // Stop loading if error occurred
       error: supabaseAuth.error || meQuery.error || null,
       isAuthenticated: false,
     };

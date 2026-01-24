@@ -49,10 +49,37 @@ export default function AuthPage() {
         }
 
         try {
-            await signUp(registerEmail, registerPassword, { name: registerName });
+            // 1. Create user in Supabase Auth
+            const { user } = await signUp(registerEmail, registerPassword, { name: registerName });
+
+            // 2. Explicitly create user in public.users table if returned user exists
+            if (user) {
+                const { supabase } = await import('@/lib/supabase');
+
+                const { error: dbError } = await supabase
+                    .from('users')
+                    .insert({
+                        openId: user.id,
+                        email: user.email,
+                        name: registerName || user.email?.split('@')[0],
+                        loginMethod: 'email',
+                        role: 'emprendedor', // Default role
+                        lastSignedIn: new Date().toISOString(),
+                    });
+
+                if (dbError) {
+                    console.error("Error creating public user profile:", dbError);
+                    // Non-blocking error, user is created in Auth anyway but might have profile issues
+                }
+            }
+
             setAuthError(null);
             // Show success message
-            alert('¡Registro exitoso! Revisa tu email para confirmar tu cuenta.');
+            alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+            // Switch to login tab automatically
+            const loginTrigger = document.querySelector('[data-value="login"]') as HTMLElement;
+            if (loginTrigger) loginTrigger.click();
+
         } catch (err: any) {
             console.error("Registration error:", err);
             setAuthError(err.message || err.error_description || 'Error al registrarse');

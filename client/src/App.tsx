@@ -12,6 +12,8 @@ import Progress from "./pages/Progress";
 import CourseManager from "./pages/admin/CourseManager";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
+import Chatbot from "./pages/Chatbot";
+
 
 function Router() {
   return (
@@ -23,7 +25,9 @@ function Router() {
       <Route path="/diagnostic" component={Diagnostic} />
       <Route path="/learning" component={Learning} />
       <Route path="/progress" component={Progress} />
+      <Route path="/chatbot" component={Chatbot} />
       <Route path="/admin/courses" component={CourseManager} />
+
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -19,30 +19,13 @@ export default function AuthCallback() {
                 }
 
                 if (session) {
-                    // Sync user with database
-                    const { user } = session;
-
-                    // Create or update user in our database
-                    const { error: dbError } = await supabase
-                        .from('users')
-                        .upsert({
-                            openId: user.id,
-                            email: user.email,
-                            name: user.user_metadata?.name || user.email?.split('@')[0],
-                            loginMethod: 'supabase',
-                            lastSignedIn: new Date().toISOString(),
-                        }, {
-                            onConflict: 'openId'
-                        });
-
-                    if (dbError) {
-                        console.error('Error syncing user:', dbError);
-                    }
-
+                    // Sync is now handled by backend createContext via Authorization header
+                    // on the next tRPC call to /dashboard
                     navigate('/dashboard');
                 } else {
                     navigate('/auth');
                 }
+
             } catch (error) {
                 console.error('Unexpected error in callback:', error);
                 navigate('/auth');

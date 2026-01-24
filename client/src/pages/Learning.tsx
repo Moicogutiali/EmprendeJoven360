@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, BookOpen, Play, Headphones, FileText, Image, CheckCircle, Lock } from "lucide-react";
 import { useState, useEffect } from "react";
+import { UnitPlayer } from "@/components/learning/UnitPlayer";
+
 
 const getContentIcon = (type: string) => {
   switch (type) {
@@ -48,6 +50,13 @@ export default function Learning() {
     { moduleId: selectedModuleId! },
     { enabled: !!selectedModuleId }
   );
+
+  // 4. Fetch Completed Units
+  const { data: completedUnits } = trpc.progress.getCompletedUnits.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
+
 
   // Auto-select first level and module on load
   useEffect(() => {
@@ -199,13 +208,16 @@ export default function Learning() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            {/* Placeholder logic for status */}
-                            {false ? (
-                              <CheckCircle className="w-5 h-5 text-secondary" />
+                            {completedUnits?.includes(unit.id) ? (
+                              <div className="flex items-center gap-1 text-secondary font-medium text-xs">
+                                <CheckCircle className="w-5 h-5" />
+                                <span className="hidden md:inline">Completado</span>
+                              </div>
                             ) : (
-                              <div className="w-5 h-5 rounded-full border border-muted" />
+                              <div className="w-5 h-5 rounded-full border-2 border-muted group-hover:border-primary/40 transition-colors" />
                             )}
                           </div>
+
                         </div>
                       </button>
                     ))}
@@ -216,31 +228,17 @@ export default function Learning() {
               </Card>
             )}
 
-            {/* Detalles de Unidad */}
-            {selectedUnitId && currentUnit && (
-              <Card className="p-6 border-border/40 bg-gradient-to-br from-primary/5 to-secondary/5">
-                <h3 className="text-lg font-bold text-foreground mb-4">
-                  {currentUnit.name}
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm text-foreground/60 mb-2">Tipo de Contenido</p>
-                    <Badge className="capitalize">
-                      {currentUnit.contentType}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="text-sm text-foreground/60 mb-2">Duracion Estimada</p>
-                    <p className="text-foreground font-semibold">
-                      {currentUnit.duration} minutos
-                    </p>
-                  </div>
-                  <Button className="w-full mt-4">
-                    Comenzar Unidad
-                  </Button>
-                </div>
+            {/* Visor de Unidad */}
+            {selectedUnitId && (
+              <Card className="p-8 border-border/40 bg-background/50 backdrop-blur-sm relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+                <UnitPlayer
+                  unitId={selectedUnitId}
+                  onClose={() => setSelectedUnitId(null)}
+                />
               </Card>
             )}
+
           </div>
         </div>
       </main>

@@ -118,17 +118,21 @@ export default function Diagnostic() {
         resultLevel = 3;
       }
 
-      await saveDiagnosticMutation.mutateAsync({
+      const response = await saveDiagnosticMutation.mutateAsync({
         responses: answers,
         resultLevel,
       });
 
       setIsCompleted(true);
-      toast.success("Diagnostico completado exitosamente!");
+      if (response.aiResult?.reasoning) {
+        toast.info(response.aiResult.reasoning, { duration: 5000 });
+      }
+      toast.success("¡Diagnóstico analizado por nuestra IA!");
 
       setTimeout(() => {
         navigate("/dashboard");
-      }, 2000);
+      }, 3000);
+
     } catch (error) {
       toast.error("Error al guardar el diagnostico");
       console.error(error);

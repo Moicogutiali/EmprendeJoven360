@@ -3,7 +3,8 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Zap, Award, TrendingUp, BookOpen, LogOut } from "lucide-react";
+import { Loader2, Zap, Award, TrendingUp, BookOpen, LogOut, Sparkles } from "lucide-react";
+
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
@@ -171,7 +172,26 @@ export default function Dashboard() {
               {t('dashboard.explore')}
             </Button>
           </Card>
+          <Card className="p-8 border-border/40 hover:shadow-lg transition-shadow">
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-foreground mb-2">{t('nav.chatbot')}</h3>
+                <p className="text-foreground/60">Obtén ayuda personalizada de nuestros coaches IA</p>
+              </div>
+              <div className="p-3 rounded-lg bg-accent/10">
+                <Sparkles className="w-6 h-6 text-accent" />
+              </div>
+            </div>
+            <Button
+              className="w-full"
+              onClick={() => navigate("/chatbot")}
+              variant="outline"
+            >
+              Consultar AI
+            </Button>
+          </Card>
         </div>
+
 
         {/* Recent Activity */}
         <Card className="p-8 border-border/40 mt-6">
