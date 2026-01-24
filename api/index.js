@@ -1412,11 +1412,31 @@ function serveStatic(app2) {
 }
 
 // _server/_core/index.ts
-console.log("[Critical] Server module evaluation started...");
+process.on("uncaughtException", (err) => {
+  console.error("[CRITICAL] Uncaught Exception:", err.message);
+  console.error(err.stack);
+});
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("[CRITICAL] Unhandled Rejection at:", promise, "reason:", reason);
+});
+console.log("[Critical] Server initialization sequence started...");
 var app = express2();
 var server = createServer(app);
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", time: (/* @__PURE__ */ new Date()).toISOString() });
+  res.json({ status: "ok", time: (/* @__PURE__ */ new Date()).toISOString(), vercel: !!process.env.VERCEL });
+});
+app.get("/api/debug", (req, res) => {
+  res.json({
+    status: "diagnostic_running",
+    env: {
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL: process.env.VERCEL,
+      APP_ID: !!process.env.VITE_APP_ID,
+      DB_URL: !!process.env.DATABASE_URL
+    },
+    cwd: process.cwd(),
+    timestamp: (/* @__PURE__ */ new Date()).toISOString()
+  });
 });
 function isPortAvailable(port) {
   return new Promise((resolve) => {
@@ -1470,6 +1490,17 @@ async function startLocalServer() {
   }
 }
 startLocalServer().catch(console.error);
+app.use((err, req, res, next) => {
+  console.error("[CRITICAL] Unhandled Reqeust Error:", err);
+  if (!res.headersSent) {
+    res.status(500).json({
+      status: "critical_runtime_error",
+      message: err.message || "Unknown Error",
+      stack: err.stack,
+      env: { VERCEL: !!process.env.VERCEL, NODE_ENV: process.env.NODE_ENV }
+    });
+  }
+});
 var index_default = app;
 export {
   index_default as default

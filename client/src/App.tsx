@@ -10,11 +10,15 @@ import Diagnostic from "./pages/Diagnostic";
 import Learning from "./pages/Learning";
 import Progress from "./pages/Progress";
 import CourseManager from "./pages/admin/CourseManager";
+import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/auth" component={Auth} />
+      <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/diagnostic" component={Diagnostic} />
       <Route path="/learning" component={Learning} />

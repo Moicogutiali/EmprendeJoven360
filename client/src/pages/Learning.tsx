@@ -53,7 +53,7 @@ export default function Learning() {
   useEffect(() => {
     if (structure && structure.length > 0 && !selectedLevelId) {
       // Find first phase with levels
-      const firstPhaseWithLevels = structure.find(p => p.levels.length > 0);
+      const firstPhaseWithLevels = structure.find((p: { levels: Array<{ id: number }> }) => p.levels.length > 0);
       if (firstPhaseWithLevels && firstPhaseWithLevels.levels.length > 0) {
         setSelectedLevelId(firstPhaseWithLevels.levels[0].id);
       }
@@ -84,7 +84,7 @@ export default function Learning() {
   }
 
   // Helper to find current objects for display
-  const currentLevelName = structure?.flatMap(p => p.levels).find(l => l.id === selectedLevelId)?.name;
+  const currentLevelName = structure?.flatMap((p: { levels: Array<{ id: number; name: string }> }) => p.levels).find((l: { id: number }) => l.id === selectedLevelId)?.name;
   const currentModule = modules?.find(m => m.id === selectedModuleId);
   const currentUnit = units?.find(u => u.id === selectedUnitId);
 
@@ -106,11 +106,11 @@ export default function Learning() {
             <Card className="p-4 border-border/40 sticky top-20 max-h-[calc(100vh-120px)] overflow-y-auto">
               <h3 className="font-semibold text-foreground mb-4">Tu Ruta</h3>
               <div className="space-y-6">
-                {structure?.map((phase) => (
+                {structure?.map((phase: { id: number; name: string; levels: Array<{ id: number; name: string }> }) => (
                   <div key={phase.id}>
                     <h4 className="text-xs uppercase text-muted-foreground font-bold mb-2 ml-2">{phase.name}</h4>
                     <div className="space-y-1">
-                      {phase.levels.map(level => (
+                      {phase.levels.map((level: { id: number; name: string }) => (
                         <button
                           key={level.id}
                           onClick={() => {
@@ -118,8 +118,8 @@ export default function Learning() {
                             setSelectedModuleId(null); // Reset module on level change
                           }}
                           className={`w-full text-left p-2 rounded-lg transition-colors text-sm ${selectedLevelId === level.id
-                              ? "bg-primary/20 text-primary font-semibold"
-                              : "hover:bg-muted text-foreground/70"
+                            ? "bg-primary/20 text-primary font-semibold"
+                            : "hover:bg-muted text-foreground/70"
                             }`}
                         >
                           <div className="flex items-center gap-2">
@@ -153,8 +153,8 @@ export default function Learning() {
                       key={module.id}
                       onClick={() => setSelectedModuleId(module.id)}
                       className={`p-4 rounded-lg border-2 transition-all text-left ${selectedModuleId === module.id
-                          ? "border-primary bg-primary/5"
-                          : "border-border/40 hover:border-primary/40"
+                        ? "border-primary bg-primary/5"
+                        : "border-border/40 hover:border-primary/40"
                         }`}
                     >
                       <h4 className="font-semibold text-foreground mb-1">{module.name}</h4>

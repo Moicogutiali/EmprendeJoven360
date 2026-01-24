@@ -1,7 +1,15 @@
-// @ts-nocheck
 import "dotenv/config";
-console.log("[Critical] Server module evaluation started...");
-// import * as Sentry from "@sentry/node"; // Sentry Removed
+
+// --- GLOBAL ERROR SHIELD (Permanent Solution for Vercel Diagnostics) ---
+process.on("uncaughtException", (err) => {
+  console.error("[CRITICAL] Uncaught Exception:", err.message);
+  console.error(err.stack);
+});
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("[CRITICAL] Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+console.log("[Critical] Server initialization sequence started...");
 import express from "express";
 import { createServer } from "http";
 import net from "net";
@@ -18,7 +26,22 @@ const server = createServer(app);
 
 // Simple Health Check
 (app as any).get("/api/health", (req: any, res: any) => {
-  res.json({ status: "ok", time: new Date().toISOString() });
+  res.json({ status: "ok", time: new Date().toISOString(), vercel: !!process.env.VERCEL });
+});
+
+// --- DIAGNOSTIC ROUTE (Bypass everything) ---
+(app as any).get("/api/debug", (req: any, res: any) => {
+  res.json({
+    status: "diagnostic_running",
+    env: {
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL: process.env.VERCEL,
+      APP_ID: !!process.env.VITE_APP_ID,
+      DB_URL: !!process.env.DATABASE_URL,
+    },
+    cwd: process.cwd(),
+    timestamp: new Date().toISOString(),
+  });
 });
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -95,5 +118,18 @@ async function startLocalServer() {
 }
 
 startLocalServer().catch(console.error);
+
+// --- GLOBAL EXPRESS ERROR HANDLER (Vercel Diagnostic) ---
+(app as any).use((err: any, req: any, res: any, next: any) => {
+  console.error("[CRITICAL] Unhandled Reqeust Error:", err);
+  if (!res.headersSent) {
+    res.status(500).json({
+      status: "critical_runtime_error",
+      message: err.message || "Unknown Error",
+      stack: err.stack,
+      env: { VERCEL: !!process.env.VERCEL, NODE_ENV: process.env.NODE_ENV },
+    });
+  }
+});
 
 export default app;
