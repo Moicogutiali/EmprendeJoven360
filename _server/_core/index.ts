@@ -1,5 +1,6 @@
 // @ts-nocheck
 import "dotenv/config";
+console.log("[Critical] Server module evaluation started...");
 // import * as Sentry from "@sentry/node"; // Sentry Removed
 import express from "express";
 import { createServer } from "http";

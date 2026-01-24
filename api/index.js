@@ -1412,6 +1412,7 @@ function serveStatic(app2) {
 }
 
 // _server/_core/index.ts
+console.log("[Critical] Server module evaluation started...");
 var app = express2();
 var server = createServer(app);
 app.get("/api/health", (req, res) => {
