@@ -1,8 +1,15 @@
 {
+    "version": 2,
+    "functions": {
+        "api/main.js": {
+            "includeFiles": "dist/public/**",
+            "runtime": "nodejs20.x"
+        }
+    },
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/api/index.ts"
+            "destination": "/api/main.js"
         },
         {
             "source": "/(.*)",

@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Diagnostic from "./pages/Diagnostic";
 import Learning from "./pages/Learning";
 import Progress from "./pages/Progress";
+import CourseManager from "./pages/admin/CourseManager";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/diagnostic" component={Diagnostic} />
       <Route path="/learning" component={Learning} />
       <Route path="/progress" component={Progress} />
+      <Route path="/admin/courses" component={CourseManager} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
@@ -34,7 +36,7 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider
         defaultTheme="light"
-        // switchable
+      // switchable
       >
         <TooltipProvider>
           <Toaster />

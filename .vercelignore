@@ -1,0 +1,16 @@
+_server/
+server/
+client/
+shared/
+drizzle/
+node_modules/
+.git/
+.manus/
+*.test.ts
+tsconfig.json
+vite.config.ts
+vitest.config.ts
+drizzle.config.ts
+README.md
+ARCHITECTURE.md
+todo.md

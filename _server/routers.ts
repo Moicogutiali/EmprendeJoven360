@@ -1,14 +1,14 @@
 // @ts-nocheck
 import { COOKIE_NAME } from "@shared/const";
 import { eq } from "drizzle-orm";
-import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
+import { getSessionCookieOptions } from "./_core/cookies.js";
+import { systemRouter } from "./_core/systemRouter.js";
+import { publicProcedure, router, protectedProcedure } from "./_core/trpc.js";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { upsertUser, getUserById, getPhases, getLevelsByPhase, getModulesByLevel, getUnitsByModule, getUnitById, getGamificationByUser, getInitialDiagnosticByUser, getAdaptiveRouteByUser, getChatbotInteractionByUserAndRole, getStudentMentors } from "./db";
-import { users, gamification, initialDiagnostics, adaptiveRoutes, chatbotInteractions, userProgress, evaluationAnswers, mentorAssignments } from "../drizzle/schema";
-import { getDb } from "./db";
+import { upsertUser, getUserById, getPhases, getLevelsByPhase, getModulesByLevel, getUnitsByModule, getUnitById, getGamificationByUser, getInitialDiagnosticByUser, getAdaptiveRouteByUser, getChatbotInteractionByUserAndRole, getStudentMentors } from "./db.js";
+import { users, gamification, initialDiagnostics, adaptiveRoutes, chatbotInteractions, userProgress, evaluationAnswers, mentorAssignments, phases, levels, modules, units } from "../drizzle/schema.js";
+import { getDb } from "./db.js";
 
 // Procedimiento protegido solo para administradores
 const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
@@ -65,6 +65,14 @@ export const appRouter = router({
     getPhases: publicProcedure.query(async () => {
       return getPhases();
     }),
+
+    // Obtener estructura completa (Fases + Niveles)
+    getStructure: publicProcedure.query(async () => {
+      const { getPhasesWithLevels } = require("./db");
+      return getPhasesWithLevels();
+    }),
+
+    // Obtener niveles de una fase
 
     // Obtener niveles de una fase
     getLevelsByPhase: publicProcedure
@@ -266,6 +274,172 @@ export const appRouter = router({
 
         return { success: true };
       }),
+
+    // ===== GESTIÓN DE CONTENIDO (ADMIN) =====
+    learning: router({
+      // --- FASES ---
+      createPhase: adminProcedure
+        .input(z.object({
+          name: z.string().min(1),
+          description: z.string().optional(),
+          order: z.number().int(),
+        }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          await db.insert(phases).values(input);
+          return { success: true };
+        }),
+
+      updatePhase: adminProcedure
+        .input(z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          order: z.number().optional(),
+        }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          const { eq } = require("drizzle-orm");
+          await db.update(phases).set(input).where(eq(phases.id, input.id));
+          return { success: true };
+        }),
+
+      deletePhase: adminProcedure
+        .input(z.object({ id: z.number() }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          const { eq } = require("drizzle-orm");
+          await db.delete(phases).where(eq(phases.id, input.id));
+          return { success: true };
+        }),
+
+      // --- NIVELES ---
+      createLevel: adminProcedure
+        .input(z.object({
+          phaseId: z.number(),
+          name: z.string().min(1),
+          description: z.string().optional(),
+          order: z.number().int(),
+        }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          await db.insert(levels).values(input);
+          return { success: true };
+        }),
+
+      updateLevel: adminProcedure
+        .input(z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          order: z.number().optional(),
+        }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          const { eq } = require("drizzle-orm");
+          await db.update(levels).set(input).where(eq(levels.id, input.id));
+          return { success: true };
+        }),
+
+      deleteLevel: adminProcedure
+        .input(z.object({ id: z.number() }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          const { eq } = require("drizzle-orm");
+          await db.delete(levels).where(eq(levels.id, input.id));
+          return { success: true };
+        }),
+
+      // --- MÓDULOS ---
+      createModule: adminProcedure
+        .input(z.object({
+          levelId: z.number(),
+          name: z.string().min(1),
+          description: z.string().optional(),
+          order: z.number().int(),
+        }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          await db.insert(modules).values(input);
+          return { success: true };
+        }),
+
+      updateModule: adminProcedure
+        .input(z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          order: z.number().optional(),
+        }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          const { eq } = require("drizzle-orm");
+          await db.update(modules).set(input).where(eq(modules.id, input.id));
+          return { success: true };
+        }),
+
+      deleteModule: adminProcedure
+        .input(z.object({ id: z.number() }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          const { eq } = require("drizzle-orm");
+          await db.delete(modules).where(eq(modules.id, input.id));
+          return { success: true };
+        }),
+
+      // --- UNIDADES ---
+      createUnit: adminProcedure
+        .input(z.object({
+          moduleId: z.number(),
+          name: z.string().min(1),
+          description: z.string().optional(),
+          order: z.number().int(),
+          contentType: z.enum(["video", "podcast", "ebook", "infografia", "quiz"]),
+          duration: z.number().optional(),
+        }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          await db.insert(units).values(input);
+          return { success: true };
+        }),
+
+      updateUnit: adminProcedure
+        .input(z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          description: z.string().optional(),
+          order: z.number().optional(),
+          contentType: z.enum(["video", "podcast", "ebook", "infografia", "quiz"]).optional(),
+          duration: z.number().optional(),
+        }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          const { eq } = require("drizzle-orm");
+          await db.update(units).set(input).where(eq(units.id, input.id));
+          return { success: true };
+        }),
+
+      deleteUnit: adminProcedure
+        .input(z.object({ id: z.number() }))
+        .mutation(async ({ input }) => {
+          const db = await getDb();
+          if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB error' });
+          const { eq } = require("drizzle-orm");
+          await db.delete(units).where(eq(units.id, input.id));
+          return { success: true };
+        }),
+    }),
   }),
 });
 

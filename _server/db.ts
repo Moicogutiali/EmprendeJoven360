@@ -1,8 +1,8 @@
 import { eq, and, inArray, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { InsertUser, users, phases, levels, modules, units, contents, evaluations, evaluationAnswers, userProgress, gamification, initialDiagnostics, adaptiveRoutes, chatbotInteractions, mentorAssignments } from "../drizzle/schema";
-import { ENV } from './_core/env';
+import { InsertUser, users, phases, levels, modules, units, contents, evaluations, evaluationAnswers, userProgress, gamification, initialDiagnostics, adaptiveRoutes, chatbotInteractions, mentorAssignments } from "../drizzle/schema.js";
+import { ENV } from './_core/env.js';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -116,6 +116,18 @@ export async function getPhaseById(phaseId: number) {
   if (!db) return undefined;
   const result = await db.select().from(phases).where(eq(phases.id, phaseId)).limit(1);
   return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getPhasesWithLevels() {
+  const db = await getDb();
+  if (!db) return [];
+  const phasesData = await db.select().from(phases).orderBy(phases.order);
+  const levelsData = await db.select().from(levels).orderBy(levels.order);
+
+  return phasesData.map(p => ({
+    ...p,
+    levels: levelsData.filter(l => l.phaseId === p.id)
+  }));
 }
 
 // ===== LEVELS =====
